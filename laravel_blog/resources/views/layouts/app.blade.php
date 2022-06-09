@@ -40,7 +40,7 @@
                     <ul class="navbar-nav ms-auto">
                         <!-- Authentication Links -->
                         <a class="nav-link" href="/">Home</a>
-                        <a class="nav-link" href="/blogs">Blogs</a>
+                        <a class="nav-link" href="{{ route('blogs.index') }}">Blogs</a>
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
