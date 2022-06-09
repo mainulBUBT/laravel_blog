@@ -11,7 +11,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+    @foreach($posts as $post)
+    <div class="col-md-6">
             <div class="card">
                 <div class="row">
                     <div class="col-md-4">
@@ -19,16 +20,17 @@
                     </div>
                     <div class="col-md-6">
                         <div class="card-body">
-                            <h4>This is Title</h4>
-                            <h6><span class="text-secondary">Posted By</span> Bhjahldf</h6>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel ut unde possimus enim ducimus obcaecati vitae nesciunt! Cumque quis, vero, placeat hic assumenda ipsa exercitationem est non quasi laborum fugit?</p>
-                            <button class="btn btn-primary"> Read More</button>
+                            <h4>{{$post->title}}</h4>
+                            <h6><span class="text-secondary">Posted By</span> {{$post->user->name}}</h6>
+                            <p>{{$post->description}}</p>
+                            <a href="" class="btn btn-primary">Read More</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+    @endforeach
     </div>
 </div>
 
