@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +22,7 @@ class PostController extends Controller
     {
 
         return view('blog.index')
-        ->with('posts', Post::orderBy('updated_at', 'DESC')->get());
+            ->with('posts', Post::orderBy('updated_at', 'DESC')->get());
     }
 
     /**
@@ -38,25 +43,37 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
             'image' => 'required|mimes:jpg,png,jpeg|max:5084',
 
         ]);
 
-        $ImageName = uniqid() . '-' . $request->title . '.' . $request->image->extension();
-        $request->image->move(public_path('blog_images'), $ImageName);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ]);
+        } else {
+            $ImageName = uniqid() . '-' . $request->title . '.' . $request->image->extension();
+            $request->image->move(public_path('blog_images'), $ImageName);
 
-        Post::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'slug' => Str::slug($request->title, "-"),
-            'image_path' => $ImageName,
-            'user_id' => auth()->user()->id
-        ]);
+            Post::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'slug' => Str::slug($request->title, "-"),
+                'image_path' => $ImageName,
+                'user_id' => auth()->user()->id
+            ]);
 
-        return redirect('/blogs')->with('message', 'Your Blog has been added!');
+            return response()->json([
+                'status' => 200,
+                'message' => "Your Blog has been added!"
+            ]);
+
+            // return redirect('/blogs')->with('message', 'Your Blog has been added!');
+        }
     }
 
     /**
@@ -67,7 +84,7 @@ class PostController extends Controller
      */
     public function show($slug)
     {
-       return view('blog.show')->with('post', Post::where('slug', $slug)->first());
+        return view('blog.show')->with('post', Post::where('slug', $slug)->first());
     }
 
     /**
@@ -96,13 +113,12 @@ class PostController extends Controller
 
         ]);
         $ImageName = '';
-        
-        if($request->hasFile('new_image')){
+
+        if ($request->hasFile('new_image')) {
             $ImageName = uniqid() . '-' . $request->title . '.' . $request->new_image->extension();
             $request->new_image->move(public_path('blog_images'), $ImageName);
-            unlink('blog_images/'.$request->image);
-        }
-        else{
+            unlink('blog_images/' . $request->image);
+        } else {
             $ImageName = $request->image;
         }
 
@@ -112,7 +128,7 @@ class PostController extends Controller
             'description' => $request->description,
             'slug' => Str::slug($request->title, "-"),
             'image_path' => $ImageName,
-            'user_id' => auth()->user()->id 
+            'user_id' => auth()->user()->id
         ]);
         return redirect('/blogs')->with('message', 'Your Blog updated!');
     }
@@ -120,7 +136,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string $slug
+     * @param  string  $slug
      * @return \Illuminate\Http\Response
      */
     public function destroy($slug)
@@ -128,6 +144,5 @@ class PostController extends Controller
         $post = Post::where('slug', $slug);
         $post->delete();
         return redirect('/blogs')->with('message', 'Blog has been deleted!');
-
     }
 }

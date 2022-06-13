@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PagesController::class, 'index']);
 
 Route::resource('/blogs', PostController::class);
+Route::post('/blogs', [PostController::class, 'store']);
 
 Auth::routes();
 

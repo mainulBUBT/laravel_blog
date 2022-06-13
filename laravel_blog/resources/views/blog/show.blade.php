@@ -17,7 +17,13 @@
                         <div class="d-grid gap-2">
                         @if(isset(Auth::user()->id) && Auth::user()->id == $post->user_id)
                         <a href="{{route('blogs.edit', $post->slug)}}" class="btn btn-primary mt-5">Edit Blog</a>
-                        <a href="{{route('blogs.destroy', $post->slug)}}" class="btn btn-danger">Delete Blog</a>
+                        <form action="{{route('blogs.destroy', $post->slug)}}" method="POST">
+                            @csrf
+                            @method('delete')
+                            <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Delete Blog</button>
+                            </div>
+                        </form>
                         @endif
                         </div>
                     </div>

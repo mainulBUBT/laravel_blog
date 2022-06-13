@@ -27,11 +27,11 @@
             <div class="card">
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="{{url('blog_images', $post->image_path)}}" alt="" style="width: 200px;">
+                        <img src="{{url('blog_images', $post->image_path)}}" alt="" style="width: 200px; height:200px;">
                     </div>
                     <div class="col-md-6">
                         <div class="card-body">
-                            <a href="{{route('blogs.show', $post->slug)}}" class="h4 text-decoration-none">{{$post->title}}</a>
+                            <a href="{{route('blogs.show', $post->slug)}}" class="h4 text-decoration-none">{{ \Illuminate\Support\Str::limit($post->title, 20, $end='...')}}</a>
                             <h6><span class="text-secondary">Posted By</span> {{$post->user->name}}</h6>
                             <h6>Published On: <span style="color:grey;">{{ date('jS M Y', strtotime($post->created_at)) }}</span></h6>
                             <p>{{ \Illuminate\Support\Str::limit($post->description, 30, $end='...')}}</p>
